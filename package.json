@@ -7,6 +7,7 @@
     "prod": "pm2 start bin/www --name web3-storage"
   },
   "dependencies": {
+    "@polkadot/api": "^7.2.1",
     "@polkadot/keyring": "^8.2.2",
     "@polkadot/util-crypto": "^8.2.2",
     "body-parser": "^1.19.0",
@@ -18,7 +19,8 @@
     "express-fileupload": "^1.2.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "web3.storage": "^3.5.1"
+    "web3.storage": "^3.5.1",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
