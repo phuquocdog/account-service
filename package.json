@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www --trace-warnings",
-    "prod": "pm2 start bin/www --name web3-storage"
+    "prod": "pm2 start bin/www --name account-service"
   },
   "dependencies": {
     "@polkadot/api": "^7.2.1",
