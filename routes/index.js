@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const { Keyring } = require('@polkadot/keyring');
 const { mnemonicGenerate,cryptoWaitReady } = require('@polkadot/util-crypto');
-
+const BN = require('bn.js');
 const WebSocketClient = require('websocket').client;
 // Import
 const { ApiPromise, WsProvider } =  require('@polkadot/api');
@@ -42,7 +42,48 @@ router.post('/phrase', function(req, res, next) {
     address: address
   })
 });
+// Get a address wallet via pharse
+router.post('/transaction', async function(req, res, next) {
+  let amount  = req.body.amount;
+  let address = req.body.address;
+  let phrase  = req.body.phrase;
+  try {
+      const api = await connection();
 
+      // Constuct the keyring after the API (crypto has an async init)
+      const keyring = new Keyring({ type: 'sr25519' });
+      // Add myAccount to our keyring with a hard-deived path (empty phrase, so uses dev)
+      const myAccount = keyring.addFromUri(phrase);
+
+      const decims = new BN(api.registry.chainDecimals);
+      const factor = new BN(10).pow(decims);
+      const amountUnit = new BN(amount).mul(factor);
+
+      const transfer = api.tx.balances.transfer(address, amountUnit);
+      // Sign and send the transaction using our account
+      const hash = await transfer.signAndSend(myAccount, { nonce: -1 });
+
+      console.log('Transfer sent with hash', hash.toHex())
+      res.json({
+        status: true,
+        hash: hash.toHex()
+      })
+
+    } catch (e) {
+      
+      res.json({
+        status: false,
+        message: e.message
+      })
+
+    }
+});
+async function connection() {
+
+  const provider = new WsProvider('wss://rpc.phuquoc.dog');
+  return await ApiPromise.create({provider});
+
+}
 async function ping() {
 
   const wsProvider = new WsProvider('wss://rpc.phuquoc.dog');
@@ -50,22 +91,7 @@ async function ping() {
 
   console.log('aaa', a);
 }
-async function main () {
-  // Initialise the provider to connect to the local node
-  const provider = new WsProvider('ws://127.0.0.1:9944');
 
-  // Create the API and wait until ready
-  const api = await ApiPromise.create({ provider });
-
-  // Retrieve the chain & node information information via rpc calls
-  const [chain, nodeName, nodeVersion] = await Promise.all([
-    api.rpc.system.chain(),
-    api.rpc.system.name(),
-    api.rpc.system.version()
-  ]);
-
-  console.log(`You are connected to chain ${chain} using ${nodeName} v${nodeVersion}`);
-}
 
 router.get('/ping', function(req, res, next) {  
 
