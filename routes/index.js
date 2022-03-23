@@ -15,12 +15,12 @@ router.get('/', function(req, res, next) {
   })
 });
 
+//Created an account
 
 router.post('/', function(req, res, next) {
   const keyring = new Keyring({ type: 'sr25519' });
   const phrase = mnemonicGenerate(12);
   const {address} = keyring.addFromUri(phrase);
-  console.log('Your phrase: ' + phrase);
   console.log('Your address: ' + address);
 
   res.json({
@@ -32,9 +32,20 @@ router.post('/', function(req, res, next) {
   })
 });
 
+// Get a address wallet via pharse
+router.post('/phrase', function(req, res, next) {
+  const keyring = new Keyring({ type: 'sr25519' });
+  const {address} = keyring.addFromUri(req.body.phrase);
+
+  res.json({
+    status: true,
+    address: address
+  })
+});
+
 async function ping() {
 
-  const wsProvider = new WsProvider('wss://rpc02.phuquoc.dog');
+  const wsProvider = new WsProvider('wss://rpc.phuquoc.dog');
   return await ApiPromise.create({ provider: wsProvider });
 
   console.log('aaa', a);

@@ -10,9 +10,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 var indexRouter = require('./routes/index');
-var storageRouter = require('./routes/storage');
-
-
 
 var app = express();
 
@@ -35,6 +32,5 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/storage', storageRouter);
 
 module.exports = app;
