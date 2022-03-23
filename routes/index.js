@@ -83,11 +83,13 @@ router.get('/ping', function(req, res, next) {
             console.log("Received: '" + message.utf8Data + "'");
         }
     });
+    connection.close();
     
     res.status(200).json({
       status: true,
       message: 'OK'
     })
+
   });
 
   client.connect('wss://rpc.phuquoc.dog', 'echo-protocol');
